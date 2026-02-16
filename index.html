@@ -419,8 +419,8 @@
         {
           key: 'quadruple',
           label: 'Quadruple Verb',
-          description: 'Noun/character, verb, verb, verb, and verb. (4 verbs, commas, final “and”.)',
-          example: 'Pacing his coral kingdom, Marlin checked the perimeter, warned the neighbors, brushed the anemone, and guarded the shadows.',
+          description: 'Verb-ing opener, then 3 action verbs: Name + verb, verb, and verb. (4 verbs total, commas, final “and”.)',
+          example: 'Pacing his coral kingdom, Marlin checked the perimeter, warned the neighbors, and guarded the shadows.',
           rules: { mustEndPunctuation: true }
         },
         {
@@ -591,34 +591,35 @@
       // TYPE RULES
       // -------------------------
       if(task.key === 'quadruple'){
-        // Model: [Verb-ing opener], Name + verb..., verb..., verb..., and verb...
-        rule(countCommas(t) >= 4, 'Quadruple Verb: you need at least 4 commas.');
+        // Model: Verb-ing opener + THREE action chunks (4 verbs total including the opener)
+        // Example: Pacing..., Marlin checked..., warned..., and guarded...
+        rule(countCommas(t) >= 3, 'Quadruple Verb: you need at least 3 commas.');
 
         const hasIngOpener = chunks[0] ? startsWithParticiple(chunks[0]) : false;
-        const actions = hasIngOpener ? chunks.slice(1) : chunks.slice(0);
+        rule(hasIngOpener, 'Quadruple Verb: you must start with a verb ending in -ing (e.g., Pacing…).');
 
-        rule(actions.length >= 4, 'Quadruple Verb: you need 4 action chunks after the opener (…, …, …, and …).');
+        const actions = hasIngOpener ? chunks.slice(1) : [];
+        rule(actions.length >= 3, 'Quadruple Verb: you need 3 action chunks after the opener (…, …, and …).');
 
+        // First action chunk should start with a name/pronoun (not a filler)
         if(actions[0]){
           const w0 = firstWord(actions[0]);
-          rule(Boolean(w0) && !['and'].includes(w0) && !CONFIG.badStarts.includes(w0), 'Quadruple Verb: first action chunk must start with a name/pronoun (not a filler).');
+          rule(Boolean(w0) && w0 !== 'and' && !CONFIG.badStarts.includes(w0), 'Quadruple Verb: first action chunk must start with a name/pronoun (not a filler).');
         }
 
         const startsVerbish = (seg) => {
           const w = (wordsOf(seg)[0] || '').toLowerCase();
           if(!w) return false;
           if(w === 'and') return false;
-          // Accept common past tense / 3rd person / -ing starters as a heuristic
           return /(ed|ing|s)$/.test(w) && w.length > 3;
         };
 
         if(actions[1]) rule(startsVerbish(actions[1]), 'Quadruple Verb: 2nd action chunk should start with a verb (e.g., warned…).');
-        if(actions[2]) rule(startsVerbish(actions[2]), 'Quadruple Verb: 3rd action chunk should start with a verb (e.g., brushed…).');
 
-        if(actions[3]){
-          const w3 = (wordsOf(actions[3])[0] || '').toLowerCase();
-          rule(w3 === 'and', 'Quadruple Verb: final chunk must start with “and”.');
-          const afterAnd = wordsOf(actions[3]).slice(1).join(' ');
+        if(actions[2]){
+          const w2 = (wordsOf(actions[2])[0] || '').toLowerCase();
+          rule(w2 === 'and', 'Quadruple Verb: final chunk must start with “and”.');
+          const afterAnd = wordsOf(actions[2]).slice(1).join(' ');
           rule(startsVerbish(afterAnd), 'Quadruple Verb: after “and”, start with a verb (e.g., guarded…).');
         }
       }
