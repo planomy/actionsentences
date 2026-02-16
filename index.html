@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mr C — Action Sentence Practice</title>
+  <style>
+    :root{
+      color-scheme: dark;
+      --bg:#0b0f14;
+      --panel:#111827;
+      --panel2:#0f172a;
+      --border:#243042;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#60a5fa;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --purple:#a78bfa;
+      --chip:#0b1220;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+
+      /* highlight colours (no icons) */
+      --hl-badstart:#1d4ed8; /* blue */
+      --hl-basic:#16a34a;    /* green */
+      --hl-passive:#dc2626;  /* red */
+      --hl-adverb:#7c3aed;   /* purple */
+      --hl-stop:#fbbf24;     /* yellow */
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 700px at 15% 10%, rgba(96,165,250,.10), transparent 55%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(167,139,250,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:24px 18px 48px;
+    }
+
+    header{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    h1{
+      margin:0;
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:22px;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:13px;
+      max-width:68ch;
+    }
+
+    .topActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    button{
+      appearance:none;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      box-shadow: var(--shadow);
+      font-weight:650;
+      font-size:13px;
+    }
+
+    button.primary{
+      border-color: rgba(96,165,250,.55);
+      background:linear-gradient(180deg, rgba(96,165,250,.22), rgba(96,165,250,.08));
+    }
+
+    button.ghost{
+      box-shadow:none;
+      background:transparent;
+    }
+
+    button:active{transform:translateY(1px)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+    }
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      header{flex-direction:column; align-items:stretch}
+      .topActions{justify-content:flex-start}
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .card h2{
+      margin:0 0 10px;
+      font-size:14px;
+      letter-spacing:.2px;
+      color: var(--text);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.20);
+      padding:8px 10px;
+      border-radius:999px;
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    .pill b{color:var(--text)}
+
+    textarea{
+      width:100%;
+      min-height:102px;
+      resize:vertical;
+      background: rgba(0,0,0,.22);
+      border:1px solid var(--border);
+      color: var(--text);
+      padding:12px;
+      border-radius:14px;
+      outline:none;
+      font-size:14px;
+      line-height:1.4;
+    }
+
+    textarea:focus{border-color: rgba(96,165,250,.55); box-shadow: 0 0 0 4px rgba(96,165,250,.08)}
+
+    .small{
+      font-size:12px;
+      color: var(--muted);
+      margin-top:6px;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .task{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      background: rgba(0,0,0,.18);
+    }
+
+    .taskHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+    }
+
+    .taskTitle{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .taskTitle b{font-size:13px}
+    .taskTitle span{font-size:12px; color:var(--muted)}
+
+    .score{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background:rgba(148,163,184,.6);
+      border:1px solid var(--border);
+    }
+
+    .dot.ok{background: rgba(34,197,94,.9); border-color: rgba(34,197,94,.55)}
+    .dot.mid{background: rgba(245,158,11,.95); border-color: rgba(245,158,11,.55)}
+    .dot.bad{background: rgba(239,68,68,.95); border-color: rgba(239,68,68,.55)}
+
+    .legend{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .key{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+      padding:8px 10px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background: rgba(0,0,0,.16);
+    }
+
+    .swatch{
+      width:12px; height:12px; border-radius:4px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+
+    .hlwrap{
+      white-space:pre-wrap;
+      word-wrap:break-word;
+      font-size:14px;
+      line-height:1.45;
+      background: rgba(0,0,0,.22);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      min-height:102px;
+    }
+
+    mark{
+      color: var(--text);
+      padding:0 .12em;
+      border-radius:6px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.25);
+    }
+    mark.badstart{background: color-mix(in srgb, var(--hl-badstart) 55%, transparent)}
+    mark.basic{background: color-mix(in srgb, var(--hl-basic) 45%, transparent)}
+    mark.passive{background: color-mix(in srgb, var(--hl-passive) 55%, transparent)}
+    mark.adverb{background: color-mix(in srgb, var(--hl-adverb) 55%, transparent)}
+    mark.stop{background: color-mix(in srgb, var(--hl-stop) 65%, transparent); color:#111827}
+
+    .twoCol{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+
+    .muted{color:var(--muted)}
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+      border-left:3px solid rgba(96,165,250,.45);
+      padding-left:10px;
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px;
+      padding:.15em .45em;
+      border-radius:8px;
+      border:1px solid rgba(148,163,184,.35);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+    }
+
+    .footer{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    .divider{height:1px; background:rgba(148,163,184,.18); margin:12px 0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Action Sentence Practice</h1>
+        <div class="sub">Students write six precise action sentences for a new pitch. Hit <span class="kbd">Analyse</span> to score structure accuracy and highlight writing issues (your colour rules).</div>
+      </div>
+      <div class="topActions">
+        <button class="ghost" id="btnNew">New pitch</button>
+        <button class="primary" id="btnAnalyse">Analyse</button>
+        <button id="btnEmail">Email Mr C</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-label="Student inputs">
+        <div class="row">
+          <div class="pill"><b id="pitchLabel">Pitch</b> <span class="muted">Random prompt: <span id="pitchPrompt"></span></span></div>
+          <div class="pill"><b>Goal</b> 6 sentences, 1 pitch</div>
+        </div>
+
+        <div class="list" id="tasks"></div>
+
+        <div class="divider"></div>
+
+        <div class="legend" aria-label="Highlight legend">
+          <div class="key"><span class="swatch" style="background:var(--hl-badstart)"></span> Bad starts (blue)</div>
+          <div class="key"><span class="swatch" style="background:var(--hl-basic)"></span> Basic words (green)</div>
+          <div class="key"><span class="swatch" style="background:var(--hl-passive)"></span> Passive verbs (red)</div>
+          <div class="key"><span class="swatch" style="background:var(--hl-adverb)"></span> Adverbs (purple)</div>
+          <div class="key"><span class="swatch" style="background:var(--hl-stop)"></span> Stop words (yellow)</div>
+        </div>
+
+        <div class="hint">
+          Quick tips: keep your commas tight, keep verbs punchy, and avoid starting with <span class="kbd">The / It / A / An / This / These / Those / They / He / She / Then / There</span>.
+        </div>
+
+        <div class="footer">Teacher notes: all word lists are editable in the <span class="mono">CONFIG</span> section in the script.</div>
+      </section>
+
+      <aside class="card" aria-label="Analysis output">
+        <h2>Analysis</h2>
+        <div class="row">
+          <div class="pill"><b>Overall</b> <span id="overallScore">–</span></div>
+          <div class="pill"><b>Structure hits</b> <span id="overallHits">–</span></div>
+        </div>
+
+        <div class="twoCol" id="analysisPanel">
+          <div class="task">
+            <div class="taskHead">
+              <div class="taskTitle">
+                <b>How this marks</b>
+                <span>Structure accuracy + your colour highlights</span>
+              </div>
+            </div>
+            <div class="small">It checks each sentence against the expected pattern (comma chunks / phrase requirements), then highlights: bad starts, basic words, passive verbs, adverbs, stop words.</div>
+          </div>
+        </div>
+
+        <div class="hint">If you want this *even stricter*, tell me your non-negotiables for each sentence type (exact commas allowed, must/must-not words, etc.).</div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // CONFIG — edit these lists
+    // =========================
+    const CONFIG = {
+      emailTo: 'ncomi3@eq.edu.au',
+
+      badStarts: [
+        'the','it','a','an','this','these','those','they','he','she','his','her','then','there','here'
+      ],
+
+      // Keep these "teaching lists" small at first; expand as you like.
+      basicWords: [
+        'get','got','went','go','goes','going','said','say','says','look','looked','see','saw','nice','good','bad','big','small','really','very'
+      ],
+
+      passiveVerbs: [
+        'was','were','is','are','be','been','being','has','have','had'
+      ],
+
+      // simple stop-word list; you can swap to your own
+      stopWords: [
+        'just','very','really','quite','kind','sort','maybe','stuff','thing','things','a','an','the','to','of','in','on','at','for','and','but','so','because','with'
+      ],
+
+      // prompts for "New pitch"
+      pitchPrompts: [
+        'Adult in a place with a problem (realistic).',
+        'A teacher in an empty classroom… something feels off.',
+        'A nurse on night shift hears a name that should not exist.',
+        'A tradie opens a job folder… and it is addressed to them.',
+        'A bus driver notices the same passenger every stop.',
+        'A librarian finds a book with today\'s date inside.',
+        'A security guard sees a door on camera that isn\'t on the plan.',
+        'A coach finds a team list with one unknown player.'
+      ],
+
+      // Sentence types (your set)
+      tasks: [
+        {
+          key: 'quadruple',
+          label: 'Quadruple Verb',
+          description: 'Noun/character, verb, verb, verb, and verb. (4 verbs, commas, final “and”.)',
+          example: 'Pacing his coral kingdom, Marlin checked the perimeter, warned the neighbors, brushed the anemone, and guarded the shadows.',
+          rules: { mustEndPunctuation: true }
+        },
+        {
+          key: 'injected',
+          label: 'Injected Verb',
+          description: 'Verb-ing clause, verb-ing clause, main clause.',
+          example: "Watching the deep water ripple, feeling the cold weight of the unknown seep through his scales, he hesitated at the reef's edge.",
+          rules: { mustEndPunctuation: true }
+        },
+        {
+          key: 'doublehand',
+          label: 'Double Hand Sentence',
+          description: 'With X in one hand and Y in the other, [character] [strong verb]...',
+          example: 'With pride in one hand and a suffocating panic in the other, Marlin unveiled the anger hidden beneath his love.',
+          rules: { mustEndPunctuation: true }
+        },
+        {
+          key: 'verbstart',
+          label: 'Verb Start',
+          description: 'Verb-ing phrase, injected clause, main clause.',
+          example: "Shouting warnings, careful not to look at the embarrassment on his son's face, he grabbed the child's fin and yanked him back toward the safety of the dark.",
+          rules: { mustEndPunctuation: true }
+        },
+        {
+          key: 'tnt',
+          label: 'TNT',
+          description: 'Two- to four-word punch sentence. (No fluff.)',
+          example: 'Nemo vanished.',
+          rules: { mustEndPunctuation: true }
+        },
+        {
+          key: 'doubleissue',
+          label: 'Double Issue Verb Start',
+          description: 'Name, verb-ing issue clause, coupled with/alongside/combined with + second issue, main clause.',
+          example: 'Marlin, battling the grief that threatened to extinguish his hope, coupled with the wisdom of the ancient currents, finally loosened his grip on the world.',
+          rules: { mustEndPunctuation: true }
+        }
+      ]
+    };
+
+    // =========================
+    // Utility
+    // =========================
+    const $ = (sel, root=document) => root.querySelector(sel);
+
+    function randFrom(arr){
+      return arr[Math.floor(Math.random()*arr.length)];
+    }
+
+    function clean(s){
+      return (s ?? '').toString();
+    }
+
+    function wordsOf(text){
+      return clean(text)
+        .replace(/\u2019/g, "'")
+        .replace(/[^A-Za-z0-9'\-\s]/g,' ')
+        .split(/\s+/)
+        .filter(Boolean);
+    }
+
+    function firstWord(text){
+      return (wordsOf(text)[0] || '').toLowerCase();
+    }
+
+    function countCommas(text){
+      return (clean(text).match(/,/g) || []).length;
+    }
+
+    function endsWithPunctuation(text){
+      return /[.!?]\s*$/.test(clean(text).trim());
+    }
+
+    function startsWithParticiple(text){
+      const w = (wordsOf(text)[0] || '');
+      return /ing$/i.test(w) && w.length > 4;
+    }
+
+    function splitCommaChunks(text){
+      return clean(text)
+        .trim()
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    // =========================
+    // Highlighter
+    // =========================
+    function escapeHtml(str){
+      return clean(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function highlightText(text){
+      // Tokenise on word boundaries, preserve punctuation/whitespace.
+      const parts = clean(text).split(/(\b)/);
+      const out = parts.map(part => {
+        if(!/^\w+$/.test(part)) return escapeHtml(part);
+        const raw = part;
+        const w = raw.toLowerCase();
+
+        const isAdverb = /ly$/.test(w) && w.length > 3;
+        const isPassive = CONFIG.passiveVerbs.includes(w);
+        const isBasic = CONFIG.basicWords.includes(w);
+        const isStop = CONFIG.stopWords.includes(w);
+
+        if(isPassive) return `<mark class="passive">${escapeHtml(raw)}</mark>`;
+        if(isAdverb) return `<mark class="adverb">${escapeHtml(raw)}</mark>`;
+        if(isBasic) return `<mark class="basic">${escapeHtml(raw)}</mark>`;
+        if(isStop) return `<mark class="stop">${escapeHtml(raw)}</mark>`;
+        return escapeHtml(raw);
+      }).join('');
+
+      // Wrap bad start if the first word matches (only first token of the sentence)
+      const fw = firstWord(text);
+      if(CONFIG.badStarts.includes(fw)){
+        return out.replace(new RegExp(`\\b${fw}\\b`, 'i'), (m)=>`<mark class="badstart">${m}</mark>`);
+      }
+      return out;
+    }
+
+    // =========================
+    // Structure checks (STRICT)
+    // =========================
+    function markTask(task, text){
+      const t = clean(text).trim();
+      const issues = [];
+
+      // IMPORTANT: define these BEFORE any inner functions that use them.
+      let hits = 0;
+      let total = 0;
+
+      const chunks = splitCommaChunks(t);
+      const fw = firstWord(t);
+      const isBlank = t.length === 0;
+
+      function rule(cond, msg){
+        total++;
+        if(cond){ hits++; return; }
+        issues.push(msg);
+      }
+
+      // baseline
+      rule(!isBlank, 'Write a sentence — this is blank.');
+      if(isBlank){
+        return { hits, total, pct: 0, status: 'bad', issues };
+      }
+
+      // punctuation
+      if(task?.rules?.mustEndPunctuation){
+        rule(endsWithPunctuation(t), 'Finish with punctuation (full stop / ! / ?).');
+      }
+
+      // bad start only matters if it's the FIRST word of the whole sentence
+      if(fw && CONFIG.badStarts.includes(fw)){
+        rule(false, `Bad start: don’t start with “${fw}”.`);
+      }
+
+      // helper checks
+      const maxWords = (n) => rule(wordsOf(t).length <= n, `Too long: keep this to ${n} words or fewer.`);
+
+      // -------------------------
+      // TYPE RULES
+      // -------------------------
+      if(task.key === 'quadruple'){
+        // Model: [Verb-ing opener], Name + verb..., verb..., verb..., and verb...
+        rule(countCommas(t) >= 4, 'Quadruple Verb: you need at least 4 commas.');
+
+        const hasIngOpener = chunks[0] ? startsWithParticiple(chunks[0]) : false;
+        const actions = hasIngOpener ? chunks.slice(1) : chunks.slice(0);
+
+        rule(actions.length >= 4, 'Quadruple Verb: you need 4 action chunks after the opener (…, …, …, and …).');
+
+        if(actions[0]){
+          const w0 = firstWord(actions[0]);
+          rule(Boolean(w0) && !['and'].includes(w0) && !CONFIG.badStarts.includes(w0), 'Quadruple Verb: first action chunk must start with a name/pronoun (not a filler).');
+        }
+
+        const startsVerbish = (seg) => {
+          const w = (wordsOf(seg)[0] || '').toLowerCase();
+          if(!w) return false;
+          if(w === 'and') return false;
+          // Accept common past tense / 3rd person / -ing starters as a heuristic
+          return /(ed|ing|s)$/.test(w) && w.length > 3;
+        };
+
+        if(actions[1]) rule(startsVerbish(actions[1]), 'Quadruple Verb: 2nd action chunk should start with a verb (e.g., warned…).');
+        if(actions[2]) rule(startsVerbish(actions[2]), 'Quadruple Verb: 3rd action chunk should start with a verb (e.g., brushed…).');
+
+        if(actions[3]){
+          const w3 = (wordsOf(actions[3])[0] || '').toLowerCase();
+          rule(w3 === 'and', 'Quadruple Verb: final chunk must start with “and”.');
+          const afterAnd = wordsOf(actions[3]).slice(1).join(' ');
+          rule(startsVerbish(afterAnd), 'Quadruple Verb: after “and”, start with a verb (e.g., guarded…).');
+        }
+      }
+
+      if(task.key === 'injected'){
+        // Model: Verb-ing chunk, Verb-ing chunk, main clause
+        rule(chunks.length >= 3, 'Injected Verb: you need 3 comma chunks (opener, injected clause, main clause).');
+        rule(countCommas(t) >= 2, 'Injected Verb: you need 2 commas.');
+
+        if(chunks[0]) rule(startsWithParticiple(chunks[0]), 'Injected Verb: chunk 1 must start with a verb ending in -ing.');
+        if(chunks[1]) rule(startsWithParticiple(chunks[1]), 'Injected Verb: chunk 2 must start with a verb ending in -ing.');
+        if(chunks[2]){
+          const mainFirst = firstWord(chunks[2]);
+          // Here we allow he/she/they in the MAIN clause (your models use it)
+          rule(Boolean(mainFirst), 'Injected Verb: chunk 3 can’t be empty.');
+        }
+      }
+
+      if(task.key === 'doublehand'){
+        // Model: With X in one hand and Y in the other, main clause
+        rule(/^with\s+/i.test(t), 'Double Hand: must start with “With …”.');
+        rule(/in\s+one\s+hand/i.test(t), 'Double Hand: must include “in one hand”.');
+        rule(/in\s+the\s+other/i.test(t), 'Double Hand: must include “in the other”.');
+        rule(t.includes(','), 'Double Hand: must include a comma after the opener.');
+        rule(/\bin\s+one\s+hand\b[\s\S]*\band\b[\s\S]*\bin\s+the\s+other\b/i.test(t), 'Double Hand: you need “in one hand … and … in the other” (in that order).');
+
+        if(chunks.length >= 2){
+          const after = chunks.slice(1).join(', ');
+          rule(wordsOf(after).length >= 2, 'Double Hand: after the comma, you need a name/pronoun + a strong verb.');
+        }
+      }
+
+      if(task.key === 'verbstart'){
+        // Model: Verb-ing chunk, injected clause, main clause
+        rule(chunks.length >= 3, 'Verb Start: you need 3 comma chunks (opener, injected clause, main clause).');
+        rule(countCommas(t) >= 2, 'Verb Start: you need 2 commas.');
+        if(chunks[0]) rule(startsWithParticiple(chunks[0]), 'Verb Start: chunk 1 must start with a verb ending in -ing.');
+        if(chunks[1]) rule(wordsOf(chunks[1]).length >= 2, 'Verb Start: chunk 2 (injected clause) needs content (not a fragment).');
+        if(chunks[2]) rule(wordsOf(chunks[2]).length >= 2, 'Verb Start: chunk 3 needs a main clause (name/pronoun + verb).');
+      }
+
+      if(task.key === 'tnt'){
+        // Model: 1–4 words, no commas
+        rule(!/,/.test(t), 'TNT: no commas.');
+        rule(wordsOf(t).length >= 1, 'TNT: can’t be empty.');
+        rule(wordsOf(t).length <= 4, `TNT: must be 1–4 words. You used ${wordsOf(t).length}.`);
+        rule(!/\b(and|because|so)\b/i.test(t), 'TNT: remove joiners (and/because/so).');
+      }
+
+      if(task.key === 'doubleissue'){
+        // Model: Name, verb-ing issue clause, coupled-with clause, main clause
+        rule(chunks.length >= 4, 'Double Issue: you need 4 comma chunks (Name, issue, coupled-with, main clause).');
+        rule(countCommas(t) >= 3, 'Double Issue: you need 3 commas.');
+
+        const before = t.split(',')[0].trim();
+        const nameWords = before.split(/\s+/).filter(Boolean);
+        rule(nameWords.length >= 1 && nameWords.length <= 2, 'Double Issue: start with a name (1–2 words) before the first comma.');
+
+        if(chunks[1]) rule(startsWithParticiple(chunks[1]), 'Double Issue: chunk 2 must start with a verb ending in -ing (e.g., battling…).');
+        if(chunks[2]) rule(/\bcoupled\s+with\b/i.test(chunks[2]) || /\bcombined\s+with\b/i.test(chunks[2]) || /\balongside\b/i.test(chunks[2]), 'Double Issue: chunk 3 must include “coupled with” (or combined with / alongside).');
+        if(chunks[3]) rule(wordsOf(chunks[3]).length >= 2, 'Double Issue: chunk 4 needs a proper main clause (subject + verb).');
+      }
+
+      // score
+      const pct = total ? Math.round((hits/total)*100) : 0;
+      const status = pct >= 85 ? 'ok' : (pct >= 60 ? 'mid' : 'bad');
+      return { hits, total, pct, status, issues };
+    }
+
+    // =========================
+    // UI build
+    // =========================
+    const state = {
+      prompt: randFrom(CONFIG.pitchPrompts),
+      inputs: {},
+      lastAnalysis: null
+    };
+
+    function setPrompt(){
+      state.prompt = randFrom(CONFIG.pitchPrompts);
+      $('#pitchPrompt').textContent = state.prompt;
+      $('#overallScore').textContent = '–';
+      $('#overallHits').textContent = '–';
+      $('#analysisPanel').innerHTML = `
+        <div class="task">
+          <div class="taskHead">
+            <div class="taskTitle">
+              <b>How this marks</b>
+              <span>Structure accuracy + your colour highlights</span>
+            </div>
+          </div>
+          <div class="small">It checks each sentence against the expected pattern (comma chunks / phrase requirements), then highlights: bad starts, basic words, passive verbs, adverbs, stop words.</div>
+        </div>
+      `;
+    }
+
+    function buildTasks(){
+      const root = $('#tasks');
+      root.innerHTML = '';
+
+      CONFIG.tasks.forEach((task, idx) => {
+        state.inputs[task.key] = state.inputs[task.key] || '';
+
+        const el = document.createElement('div');
+        el.className = 'task';
+        el.innerHTML = `
+          <div class="taskHead">
+            <div class="taskTitle">
+              <b>${idx+1}. ${task.label}</b>
+              <span>${task.description}</span>
+            </div>
+            <div class="score" id="score_${task.key}">
+              <span class="dot" id="dot_${task.key}"></span>
+              <span class="muted">–</span>
+            </div>
+          </div>
+          <textarea id="in_${task.key}" placeholder="Write your sentence here..."></textarea>
+          <div class="small">Example: <span class="muted">${escapeHtml(task.example)}</span></div>
+          <div class="small" style="margin-top:10px">Highlighted version:</div>
+          <div class="hlwrap" id="hl_${task.key}"></div>
+          <div class="small" id="msg_${task.key}" style="margin-top:8px"></div>
+        `;
+
+        root.appendChild(el);
+
+        const ta = $(`#in_${task.key}`);
+        const hl = $(`#hl_${task.key}`);
+
+        const refresh = () => {
+          state.inputs[task.key] = ta.value;
+          hl.innerHTML = highlightText(ta.value);
+        };
+
+        ta.value = state.inputs[task.key];
+        refresh();
+        ta.addEventListener('input', refresh);
+      });
+    }
+
+    function analyseAll(){
+      const results = CONFIG.tasks.map(task => ({ task, text: state.inputs[task.key] || '', res: markTask(task, state.inputs[task.key] || '') }));
+
+      // Update per-task UI
+      results.forEach(({task, res}) => {
+        const dot = $(`#dot_${task.key}`);
+        const score = $(`#score_${task.key} .muted`);
+        const msg = $(`#msg_${task.key}`);
+
+        dot.classList.remove('ok','mid','bad');
+        dot.classList.add(res.status);
+        score.textContent = `${res.pct}% (${res.hits}/${res.total})`;
+
+        if(res.issues.length === 0){
+          msg.innerHTML = `<span style="color: rgba(34,197,94,.95)">Solid. Structure looks right.</span>`;
+        } else {
+          const lis = res.issues.slice(0,6).map(x=>`<li>${escapeHtml(x)}</li>`).join('');
+          msg.innerHTML = `<div class="muted">Fix:</div><ul style="margin:6px 0 0 18px; color: var(--muted)">${lis}</ul>`;
+        }
+      });
+
+      // Overall
+      const total = results.reduce((a,x)=>a + x.res.total, 0);
+      const hits = results.reduce((a,x)=>a + x.res.hits, 0);
+      const pct = total ? Math.round((hits/total)*100) : 0;
+      $('#overallScore').textContent = `${pct}%`;
+      $('#overallHits').textContent = `${hits}/${total}`;
+
+      // Build analysis panel
+      const panel = $('#analysisPanel');
+      panel.innerHTML = '';
+
+      results.forEach(({task, res, text}) => {
+        const card = document.createElement('div');
+        card.className = 'task';
+        card.innerHTML = `
+          <div class="taskHead">
+            <div class="taskTitle">
+              <b>${task.label}</b>
+              <span>${res.pct}% (${res.hits}/${res.total})</span>
+            </div>
+            <div class="score"><span class="dot ${res.status}"></span> <span class="muted">${res.status === 'ok' ? 'Strong' : (res.status === 'mid' ? 'Close' : 'Needs work')}</span></div>
+          </div>
+          <div class="small" style="margin-bottom:8px">Your sentence:</div>
+          <div class="hlwrap">${highlightText(text)}</div>
+          <div class="small" style="margin-top:10px">Structure feedback:</div>
+          <div class="small" style="color: var(--muted)">${res.issues.length ? escapeHtml(res.issues.join(' | ')) : 'All checks passed.'}</div>
+        `;
+        panel.appendChild(card);
+      });
+
+      state.lastAnalysis = { results, pct, hits, total, prompt: state.prompt };
+    }
+
+    function emailMrC(){
+      const lines = [];
+      lines.push('Mr C — Action Sentence Practice');
+      lines.push('');
+      lines.push(`Prompt: ${state.prompt}`);
+      lines.push('');
+
+      CONFIG.tasks.forEach((task, i) => {
+        const text = clean(state.inputs[task.key]).trim();
+        lines.push(`${i+1}. ${task.label}`);
+        lines.push(text ? text : '[blank]');
+        lines.push('');
+      });
+
+      if(state.lastAnalysis){
+        lines.push('----');
+        lines.push(`Overall: ${state.lastAnalysis.pct}% (${state.lastAnalysis.hits}/${state.lastAnalysis.total})`);
+        lines.push('');
+        state.lastAnalysis.results.forEach(({task, res}) => {
+          lines.push(`${task.label}: ${res.pct}%`);
+          if(res.issues.length){
+            lines.push('Fix: ' + res.issues.join(' / '));
+          }
+          lines.push('');
+        });
+      }
+
+      const subject = encodeURIComponent('Action Sentence Practice — Student Submission');
+      const body = encodeURIComponent(lines.join('\n'));
+      window.location.href = `mailto:${CONFIG.emailTo}?subject=${subject}&body=${body}`;
+    }
+
+    // =========================
+    // Mini test suite (runs in console)
+    // =========================
+    function runSelfTests(){
+      const findTask = (key) => CONFIG.tasks.find(t => t.key === key);
+
+      const tests = [
+        // Quadruple
+        { key: 'quadruple', text: CONFIG.tasks.find(t=>t.key==='quadruple').example, expectIssues: 0 },
+        { key: 'quadruple', text: 'Marlin checked the perimeter and guarded the shadows.', expectIssuesMin: 1 },
+
+        // Injected
+        { key: 'injected', text: CONFIG.tasks.find(t=>t.key==='injected').example, expectIssues: 0 },
+        { key: 'injected', text: 'Marlin walked to the reef and looked.', expectIssuesMin: 1 },
+
+        // Double hand
+        { key: 'doublehand', text: CONFIG.tasks.find(t=>t.key==='doublehand').example, expectIssues: 0 },
+        { key: 'doublehand', text: 'Pride in one hand and panic in the other Marlin yelled.', expectIssuesMin: 1 },
+
+        // Verb start
+        { key: 'verbstart', text: CONFIG.tasks.find(t=>t.key==='verbstart').example, expectIssues: 0 },
+        { key: 'verbstart', text: 'Marlin shouted warnings, and he ran.', expectIssuesMin: 1 },
+
+        // TNT
+        { key: 'tnt', text: CONFIG.tasks.find(t=>t.key==='tnt').example, expectIssues: 0 },
+        { key: 'tnt', text: 'Nemo vanished into the deep blue sea.', expectIssuesMin: 1 },
+
+        // Double issue
+        { key: 'doubleissue', text: CONFIG.tasks.find(t=>t.key==='doubleissue').example, expectIssues: 0 },
+        { key: 'doubleissue', text: 'Marlin battled grief coupled with wisdom and loosened his grip.', expectIssuesMin: 1 },
+      ];
+
+      let passed = 0;
+      let failed = 0;
+
+      tests.forEach((tc, i) => {
+        const task = findTask(tc.key);
+        const res = markTask(task, tc.text);
+
+        const okExact = Number.isFinite(tc.expectIssues) ? (res.issues.length === tc.expectIssues) : true;
+        const okMin = Number.isFinite(tc.expectIssuesMin) ? (res.issues.length >= tc.expectIssuesMin) : true;
+
+        const ok = okExact && okMin;
+
+        if(ok){
+          passed++;
+        } else {
+          failed++;
+          console.warn(`[SelfTest FAIL #${i+1}] ${tc.key}`, { text: tc.text, issues: res.issues });
+        }
+      });
+
+      if(failed === 0){
+        console.info(`[SelfTests] All passed (${passed}/${passed}).`);
+      } else {
+        console.info(`[SelfTests] Passed ${passed}/${passed+failed}, Failed ${failed}. See warnings above.`);
+      }
+    }
+
+    // =========================
+    // Init
+    // =========================
+    function init(){
+      setPrompt();
+      buildTasks();
+      runSelfTests();
+
+      $('#btnNew').addEventListener('click', () => {
+        CONFIG.tasks.forEach(t => state.inputs[t.key] = '');
+        setPrompt();
+        buildTasks();
+      });
+
+      $('#btnAnalyse').addEventListener('click', analyseAll);
+      $('#btnEmail').addEventListener('click', emailMrC);
+
+      document.addEventListener('keydown', (e)=>{
+        const isMac = navigator.platform.toLowerCase().includes('mac');
+        const mod = isMac ? e.metaKey : e.ctrlKey;
+        if(mod && e.key === 'Enter') analyseAll();
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
